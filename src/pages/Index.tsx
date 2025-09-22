@@ -1,14 +1,35 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState, useEffect } from 'react';
+import AdminAuth from '@/components/AdminAuth';
+import AdminDashboard from '@/components/AdminDashboard';
 
 const Index = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4 color-black text-black">Добро пожаловать!</h1>
-        <p className="text-xl text-gray-600">тут будет отображаться ваш проект</p>
-      </div>
-    </div>
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authToken, setAuthToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem('admin_token');
+    if (savedToken) {
+      setAuthToken(savedToken);
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleAuth = (token: string) => {
+    setAuthToken(token);
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin_token');
+    setAuthToken(null);
+    setIsAuthenticated(false);
+  };
+
+  if (!isAuthenticated) {
+    return <AdminAuth onAuth={handleAuth} />;
+  }
+
+  return <AdminDashboard onLogout={handleLogout} />;
 };
 
 export default Index;
